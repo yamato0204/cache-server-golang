@@ -6,17 +6,17 @@ import (
 	"github.com/yamato0204/cache-server-golang/internal/service"
 )
 
-type UserUsercase struct {
+type UserUsecase struct {
 	userRegisterService *service.UserRegisterService
 }
 
 func NewUserUsecase(userRegisterService *service.UserRegisterService) *UserUsercase {
-	return &UserUsercase{
+	return &UserUsecase{
 		userRegisterService: userRegisterService,
 	}
 }
 
-func (u *UserUsercase) Register(ctx context.Context) (int64, error) {
+func (u *UserUsecase) RegisterData(ctx context.Context) (int64, error) {
 	userId, err := u.userRegisterService.Register(ctx)
 	if err != nil {
 		return 0, err
