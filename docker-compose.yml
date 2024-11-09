@@ -3,7 +3,7 @@ services:
   go:
     build:
       # context: ./api
-      context: ./api/
+      context: ./server/
       dockerfile: Dockerfile
     environment:
       - Asia/Tokyo
@@ -12,7 +12,7 @@ services:
     develop:
       watch:
         - action: rebuild
-          path: ./api
+          path: ./server
     depends_on:
       db:
         condition: service_healthy

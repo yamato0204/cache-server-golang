@@ -1,0 +1,19 @@
+no-tests = true
+wipe = true 
+
+
+
+templates = [
+  "server/internal/infra/mysql/templates/main",
+  "server/internal/infra/mysql/templates/test",
+  "server/internal/infra/mysql/templates/custom",
+ 
+]
+
+[mysql]
+  dbname     = "test"
+  host       = "127.0.0.1"
+  port       = 3306
+  user       = "root"
+  pass       = "pass"
+  sslmode    = "false"
