@@ -1,37 +1,39 @@
 package service
 
-import "context"
+import (
+	"context"
+	"fmt"
+)
 
 type UserRegisterService struct {
-	uuidGenerator        ifrepository.IFUUIDGenerator
-	coinEntityRepository ifrepository.IFCoinEntityRepository
+	userId int64
 }
 
 func NewUserRegisterService(
-	uuidGenerator ifrepository.IFUUIDGenerator,
-	coinEntityRepository ifrepository.IFCoinEntityRepository,
+	userId int64,
 ) *UserRegisterService {
 	return &UserRegisterService{
-		uuidGenerator:        uuidGenerator,
-		coinEntityRepository: coinEntityRepository,
+		userId: userId,
 	}
 }
 
 func (s *UserRegisterService) Register(ctx context.Context) (int64, error) {
-	userId := s.uuidGenerator.GetUUID()
+	// userId := s.uuidGenerator.GetUUID()
 
-	if err := s.addCoin(ctx, userId); err != nil {
-		return 0, err
-	}
+	// if err := s.addCoin(ctx, userId); err != nil {
+	// 	return 0, err
+	// }
+	fmt.Println(s.userId)
 
-	return userId, nil
+	return 0, nil
 }
 
 func (s *UserRegisterService) addCoin(ctx context.Context, userId int64) error {
-	e, err := s.coinEntityRepository.Create(ctx, userId)
-	if err != nil {
-		return err
-	}
-	e.Add(1000)
-	return s.coinEntityRepository.Save(ctx, e)
+	// e, err := s.coinEntityRepository.Create(ctx, userId)
+	// if err != nil {
+	// 	return err
+	// }
+	// e.Add(1000)
+
+	return nil
 }

@@ -10,7 +10,7 @@ type UserUsecase struct {
 	userRegisterService *service.UserRegisterService
 }
 
-func NewUserUsecase(userRegisterService *service.UserRegisterService) *UserUsercase {
+func NewUserUsecase(userRegisterService *service.UserRegisterService) *UserUsecase {
 	return &UserUsecase{
 		userRegisterService: userRegisterService,
 	}

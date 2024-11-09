@@ -23,3 +23,8 @@ create-migration:
 
 model_gen:
 	sqlboiler mysql --wipe --pkgname datamodel --output api/internal/infra/datamodel 
+
+
+.PHONY: api_gen
+api_gen:
+	oapi-codegen -package schema openapi.yaml > server/internal/handler/schema/api.gen.go
