@@ -15,6 +15,7 @@ import (
 	"github.com/yamato0204/cache-server-golang/internal/infra/mysql/cachedb"
 	"github.com/yamato0204/cache-server-golang/internal/infra/mysql/cacherepository"
 	"github.com/yamato0204/cache-server-golang/internal/infra/mysql/integrationrepository"
+	"github.com/yamato0204/cache-server-golang/internal/infra/mysql/repository"
 	"github.com/yamato0204/cache-server-golang/internal/service"
 	"github.com/yamato0204/cache-server-golang/internal/usecase"
 )
@@ -22,6 +23,7 @@ import (
 // Injectors from wire.go:
 
 func Inject() (*provider.GameServer, func(), error) {
+	uuidGenerator := repository.NewUUIDGenerator()
 	configMysql, err := config.NewMysqlConfig()
 	if err != nil {
 		return nil, nil, err
@@ -34,7 +36,7 @@ func Inject() (*provider.GameServer, func(), error) {
 	cacheDB := cachedb.NewCacheDB(db)
 	coinEntityCacheRepository := cacherepository.NewCoinEntityCacheRepository(cacheDB)
 	coinIntegrationRepository := integrationrepository.NewCoinIntegrationRepository(coinEntityCacheRepository)
-	userRegisterService := service.NewUserRegisterService(coinIntegrationRepository)
+	userRegisterService := service.NewUserRegisterService(uuidGenerator, coinIntegrationRepository)
 	userUsecase := usecase.NewUserUsecase(userRegisterService)
 	userHandler := api.NewUserHandler(userUsecase)
 	baseHandler := handler.NewBaseHandler(userHandler)

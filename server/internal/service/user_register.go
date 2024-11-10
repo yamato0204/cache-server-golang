@@ -7,17 +7,18 @@ import (
 )
 
 type UserRegisterService struct {
+	uuidGenerator        ifrepository.IFUUIDGenerator
 	coinEntityRepository ifrepository.IFCoinEntityRepository
 }
 
-func NewUserRegisterService(coinEntityRepository ifrepository.IFCoinEntityRepository) *UserRegisterService {
-	return &UserRegisterService{coinEntityRepository: coinEntityRepository}
+func NewUserRegisterService(uuidGenerator ifrepository.IFUUIDGenerator, coinEntityRepository ifrepository.IFCoinEntityRepository) *UserRegisterService {
+	return &UserRegisterService{uuidGenerator: uuidGenerator, coinEntityRepository: coinEntityRepository}
 }
 
 func (s *UserRegisterService) Register(ctx context.Context) (int64, error) {
-	//userId := s.uuidGenerator.GetUUID()
+	userId := s.uuidGenerator.GetUUID()
 
-	if err := s.addCoin(ctx, 222); err != nil {
+	if err := s.addCoin(ctx, userId); err != nil {
 		return 0, err
 	}
 
