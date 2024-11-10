@@ -31,6 +31,10 @@ func start() error {
 
 	e := echo.New()
 	gameServer.Router.RegisterRoutes(e)
+	err = gameServer.Db.Migrate()
+	if err != nil {
+		return err
+	}
 	e.Logger.Fatal(e.Start(":8080"))
 	return nil
 }

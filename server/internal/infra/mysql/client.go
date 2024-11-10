@@ -20,6 +20,8 @@ func NewDB(mysqlConfig *config.Mysql) (*ApplicationDB, func(), error) {
 		return nil, func() {}, err
 	}
 
-	return &ApplicationDB{Db: db}
+	return &ApplicationDB{Db: db}, func() {
+		db.Close()
+	}, nil
 
 }

@@ -1,8 +1,7 @@
-package migrations
+package mysql
 
 import (
 	"fmt"
-	"log"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
@@ -10,8 +9,8 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-func (db *DB) Migrate() error {
-	driver, err := mysql.WithInstance(db.DB.DB, &mysql.Config{})
+func (db *ApplicationDB) Migrate() error {
+	driver, err := mysql.WithInstance(db.Db.DB, &mysql.Config{})
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -30,13 +29,6 @@ func (db *DB) Migrate() error {
 		fmt.Println(err)
 		return err
 	}
-
-	tables, err := db.ListTables()
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-	log.Println(tables)
 
 	return nil
 
