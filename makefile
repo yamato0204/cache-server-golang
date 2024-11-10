@@ -22,7 +22,7 @@ create-migration:
 	migrate create -ext sql -dir api/migrations -seq $(MIGRATION_NAME)
 
 model_gen:
-	sqlboiler mysql --wipe --pkgname datamodel --output api/internal/infra/datamodel 
+	sqlboiler mysql --wipe --pkgname datamodel --output server/internal/infra/mysql/datamodel 
 
 
 .PHONY: api_gen
