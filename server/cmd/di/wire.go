@@ -14,8 +14,9 @@ func Inject() (*provider.GameServer, func(), error) {
 		provider.HandlerSet,
 		provider.UsecaseSet,
 		provider.ServiceSet,
-
-		//provider.ConfigSet,
+		provider.RepositorySet,
+		provider.InfraSet,
+		provider.ConfigSet,
 	)
 	return nil, nil, nil
 }
