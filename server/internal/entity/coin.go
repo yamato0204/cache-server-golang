@@ -1,14 +1,16 @@
 package entity
 
+import "github.com/yamato0204/cache-server-golang/internal/infra/mysql/datamodel"
+
 type CoinEntity struct {
 	useId int64
 	num   int64
 }
 
-func NewCoinEntity(userId int64) *CoinEntity {
+func NewCoinEntity(m *datamodel.UserCoin) *CoinEntity {
 	return &CoinEntity{
-		useId: userId,
-		num:   0,
+		useId: m.UserID,
+		num:   m.Num,
 	}
 }
 

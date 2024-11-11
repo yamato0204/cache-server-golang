@@ -39,7 +39,7 @@ func (cdb *CacheDB) Insert(ctx context.Context, content CacheContent) error {
 	if err != nil {
 		return err
 	}
-	if cachedContent != nil {
+	if cachedContent == nil {
 		content.SetCacheStatus(Insert)
 
 		return nil
