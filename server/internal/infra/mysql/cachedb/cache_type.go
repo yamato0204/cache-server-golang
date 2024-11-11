@@ -13,7 +13,7 @@ const (
 type CacheContent interface {
 	Table() string
 	UniqueKeyColumnValueStr() string
-	SetCacheStatus(s CacheStatus)
+	SetCacheStatus(status CacheStatus)
 	GetCacheStatus() CacheStatus
 	Update(content CacheContent) error
 }

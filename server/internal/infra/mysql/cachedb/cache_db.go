@@ -2,6 +2,7 @@ package cachedb
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -22,6 +23,39 @@ func NewCacheDB(db *sqlx.DB) *CacheDB {
 	return &CacheDB{
 		db: db,
 		//modelBulkExecutorMap: modelBulkExecutorMap,
+	}
+}
+
+func (cdb *CacheDB) Insert(ctx context.Context, content CacheContent) error {
+	cacheManager, err := extractDBOperationCacheManager(ctx)
+	if err != nil {
+		return err
+	}
+
+	cacheManager.mutex.Lock()
+	defer cacheManager.mutex.Unlock()
+
+	cachedContent, err := cdb.extractCacheContent(ctx, content)
+	if err != nil {
+		return err
+	}
+	if cachedContent != nil {
+		content.SetCacheStatus(Insert)
+
+		return nil
+	}
+
+	switch cachedContent.GetCacheStatus() {
+	case Insert, Select, Update:
+		return errors.New("already exists")
+	case Delete:
+		cachedContent.SetCacheStatus(Update)
+		return cachedContent.Update(content)
+	case None:
+		cachedContent.SetCacheStatus(Insert)
+		return cachedContent.Update(content)
+	default:
+		return errors.New("no status found")
 	}
 }
 
