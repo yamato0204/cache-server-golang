@@ -1,6 +1,8 @@
 package cachedb
 
 import (
+	"context"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -21,4 +23,22 @@ func NewCacheDB(db *sqlx.DB) *CacheDB {
 		db: db,
 		//modelBulkExecutorMap: modelBulkExecutorMap,
 	}
+}
+
+func (cdb *CacheDB) extractCacheContent(ctx context.Context, content CacheContent) (CacheContent, error) {
+	cacheManager, err := extractDBOperationCacheManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	_, ok := cacheManager.dbOperationResult[content.Table()]
+	if !ok {
+		cacheManager.dbOperationResult[content.Table()] = make(map[string]CacheContent)
+	}
+	cachedContent, ok := cacheManager.dbOperationResult[content.Table()][content.UniqueKeyColumnValueStr()]
+	if !ok {
+		return nil, nil
+	}
+	return cachedContent, nil
+
 }
