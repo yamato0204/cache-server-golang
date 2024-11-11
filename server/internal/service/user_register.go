@@ -22,7 +22,7 @@ func (s *UserRegisterService) Register(ctx context.Context) (int64, error) {
 		return 0, err
 	}
 
-	return 0, nil
+	return userId, nil
 }
 
 func (s *UserRegisterService) addCoin(ctx context.Context, userId int64) error {
@@ -32,5 +32,5 @@ func (s *UserRegisterService) addCoin(ctx context.Context, userId int64) error {
 	}
 	e.Add(1000)
 
-	return nil
+	return s.coinEntityRepository.Save(ctx, e)
 }
