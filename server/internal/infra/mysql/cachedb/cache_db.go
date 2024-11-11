@@ -59,6 +59,42 @@ func (cdb *CacheDB) Insert(ctx context.Context, content CacheContent) error {
 	}
 }
 
+func (cdb *CacheDB) Update(ctx context.Context, content CacheContent) error {
+	cacheManager, err := extractDBOperationCacheManager(ctx)
+	if err != nil {
+		return err
+	}
+
+	cacheManager.mutex.Lock()
+	defer cacheManager.mutex.Unlock()
+
+	cacheContent, err := cdb.extractCacheContent(ctx, content)
+	if err != nil {
+		return err
+	}
+	if cacheContent == nil {
+		return errors.New("not found")
+	}
+
+	switch cacheContent.GetCacheStatus() {
+	case Select, Update:
+		cacheContent.SetCacheStatus(Update)
+		if err := cacheContent.Update(content); err != nil {
+			return err
+		}
+		return nil
+	case Insert:
+		if err = cacheContent.Update(content); err != nil {
+			return err
+		}
+		return nil
+	case Delete:
+		return errors.New("already deleted")
+	default:
+		return errors.New("not found")
+	}
+}
+
 func (cdb *CacheDB) extractCacheContent(ctx context.Context, content CacheContent) (CacheContent, error) {
 	cacheManager, err := extractDBOperationCacheManager(ctx)
 	if err != nil {
