@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"github.com/labstack/echo/v4"
+	"github.com/yamato0204/cache-server-golang/internal/handler/acontext"
 	"github.com/yamato0204/cache-server-golang/internal/infra/mysql"
 	"github.com/yamato0204/cache-server-golang/internal/infra/mysql/cachedb"
 )
@@ -14,8 +16,28 @@ func NewTransactionMiddleware(db *mysql.ApplicationDB, cacheDB *cachedb.CacheDB)
 	return &TransactionMiddleware{db: db, cacheDB: cacheDB}
 }
 
-// func (m *TransactionMiddleware) Intercept(next echo.HandlerFunc) echo.HandlerFunc {
-// 	return func(c echo.Context) (err error) {
-// 		var commonResp *schema.CommonResponse
-// 		ctx := c.Request().Context()
-// 		ctx =
+func (m *TransactionMiddleware) Intercept(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) (err error) {
+
+		ctx := c.Request().Context()
+		ctx = acontext.WithAPIResponse(ctx)
+		ctx = cachedb.WithCacheContext(ctx)
+		c.SetRequest(c.Request().WithContext(ctx))
+
+		defer func() {
+			if err != nil {
+				m.cacheDB.Rollback(ctx)
+			}
+		}()
+
+		if err = next(c); err != nil {
+			return err
+		}
+
+		if err = m.cacheDB.Commit(ctx); err != nil {
+			return err
+		}
+		return nil
+	}
+
+}

@@ -15,7 +15,7 @@ import (
 
 type CacheDB struct {
 	db *sqlx.DB
-	//tx                   *sqlx.Tx
+	tx *sqlx.Tx
 	//modelBulkExecutorMap map[string]BulkExecutor
 }
 
