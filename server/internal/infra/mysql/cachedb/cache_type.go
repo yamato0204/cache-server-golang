@@ -16,4 +16,5 @@ type CacheContent interface {
 	SetCacheStatus(status CacheStatus)
 	GetCacheStatus() CacheStatus
 	Update(content CacheContent) error
+	CreateCopy() CacheContent
 }

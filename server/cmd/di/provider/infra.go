@@ -14,4 +14,5 @@ var InfraSet = wire.NewSet(
 	mysql.NewDB,
 	mysql.RetrieveSqlxDB,
 	cachedb.NewCacheDB,
+	repository.NewModelBulkExecutorMap,
 )

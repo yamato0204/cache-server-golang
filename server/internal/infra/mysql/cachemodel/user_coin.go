@@ -42,3 +42,14 @@ func (m *UserCoinCacheModel) Update(content cachedb.CacheContent) error {
 	m.Num = model.Num
 	return nil
 }
+
+func (m *UserCoinCacheModel) CreateCopy() cachedb.CacheContent {
+	newUserCoin := &UserCoinCacheModel{
+		UserCoin: datamodel.UserCoin{
+			UserID: m.UserID,
+			Num:    m.Num,
+		},
+		cacheStatus: m.cacheStatus,
+	}
+	return newUserCoin
+}
