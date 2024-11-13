@@ -41,7 +41,9 @@ func (cdb *CacheDB) Rollback(ctx context.Context) error {
 
 func (cdb *CacheDB) SyncedToDB(ctx context.Context) (map[string]map[CacheStatus][]CacheContent, error) {
 	if cdb.tx == nil {
-		return nil, errors.New("transaction is not started")
+		if err := cdb.Begin(); err != nil {
+			return nil, err
+		}
 	}
 
 	cacheManager, err := extractDBOperationCacheManager(ctx)
@@ -49,8 +51,8 @@ func (cdb *CacheDB) SyncedToDB(ctx context.Context) (map[string]map[CacheStatus]
 		return nil, err
 	}
 
+	// 1. キャッシュ一覧をテーブルとキャッシュ状態をキーにしたマップ型に変換する
 	cachesMapByStatus := make(map[string]map[CacheStatus][]CacheContent)
-
 	for table, resultMap := range cacheManager.dbOperationResult {
 		cachesMapByStatus[table] = make(map[CacheStatus][]CacheContent)
 		for _, result := range resultMap {
@@ -64,29 +66,27 @@ func (cdb *CacheDB) SyncedToDB(ctx context.Context) (map[string]map[CacheStatus]
 			}
 			cachesMapByStatus[table][cacheStatus] = append(cachesMapByStatus[table][cacheStatus], result.CreateCopy())
 
+			// 処理済みとしてcontextにcacheされているcacheの内容のstatusをNoneに設定する
 			result.SetCacheStatus(None)
 		}
 	}
 
+	// 2. modelBulkExecuterMapを利用して、各テーブルごとにDB操作を実行する
 	for table, cachesMap := range cachesMapByStatus {
 		for cacheStatus, caches := range cachesMap {
 			switch cacheStatus {
 			case Insert:
-				err = cdb.modelBulkExecutorMap[table].BulkInsert(ctx, cdb.tx, caches)
-				if err != nil {
+				if err = cdb.modelBulkExecutorMap[table].BulkInsert(ctx, cdb.tx, caches); err != nil {
 					return nil, err
 				}
 			case Update:
-				err = cdb.modelBulkExecutorMap[table].BulkUpdate(ctx, cdb.tx, caches)
-				if err != nil {
+				if err = cdb.modelBulkExecutorMap[table].BulkUpdate(ctx, cdb.tx, caches); err != nil {
 					return nil, err
 				}
 			case Delete:
-				err = cdb.modelBulkExecutorMap[table].BulkDelete(ctx, cdb.tx, caches)
-				if err != nil {
+				if err = cdb.modelBulkExecutorMap[table].BulkDelete(ctx, cdb.tx, caches); err != nil {
 					return nil, err
 				}
-
 			}
 		}
 	}

@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/yamato0204/cache-server-golang/internal/handler/acontext"
 	"github.com/yamato0204/cache-server-golang/internal/infra/mysql"
@@ -34,10 +36,26 @@ func (m *TransactionMiddleware) Intercept(next echo.HandlerFunc) echo.HandlerFun
 			return err
 		}
 
+		if err = m.cacheDB.Begin(); err != nil {
+			return err
+		}
+
+		_, err = m.cacheDB.SyncedToDB(ctx)
+		if err != nil {
+			return err
+		}
+
 		if err = m.cacheDB.Commit(ctx); err != nil {
 			return err
 		}
-		return nil
+
+		apiResponse, err := acontext.ExtractAPIResponse(ctx)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, apiResponse)
+
 	}
 
 }
