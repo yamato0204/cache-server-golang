@@ -33,7 +33,9 @@ func Inject() (*provider.GameServer, func(), error) {
 		return nil, nil, err
 	}
 	db := mysql.RetrieveSqlxDB(applicationDB)
-	cacheDB := cachedb.NewCacheDB(db)
+	coinEntityRepository := repository.NewCoinEntityRepository(applicationDB)
+	v := repository.NewModelBulkExecutorMap(coinEntityRepository)
+	cacheDB := cachedb.NewCacheDB(db, v)
 	coinEntityCacheRepository := cacherepository.NewCoinEntityCacheRepository(cacheDB)
 	coinIntegrationRepository := integrationrepository.NewCoinIntegrationRepository(coinEntityCacheRepository)
 	userRegisterService := service.NewUserRegisterService(uuidGenerator, coinIntegrationRepository)
