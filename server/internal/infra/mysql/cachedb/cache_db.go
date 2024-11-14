@@ -41,7 +41,7 @@ func (cdb *CacheDB) Insert(ctx context.Context, content CacheContent) error {
 	}
 	if cachedContent == nil {
 		content.SetCacheStatus(Insert)
-
+		cacheManager.dbOperationResult[content.Table()][content.UniqueKeyColumnValueStr()] = content.CreateCopy()
 		return nil
 	}
 
