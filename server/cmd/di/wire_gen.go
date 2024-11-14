@@ -11,6 +11,7 @@ import (
 	"github.com/yamato0204/cache-server-golang/config"
 	"github.com/yamato0204/cache-server-golang/internal/handler"
 	"github.com/yamato0204/cache-server-golang/internal/handler/api"
+	"github.com/yamato0204/cache-server-golang/internal/handler/middleware"
 	"github.com/yamato0204/cache-server-golang/internal/infra/mysql"
 	"github.com/yamato0204/cache-server-golang/internal/infra/mysql/cachedb"
 	"github.com/yamato0204/cache-server-golang/internal/infra/mysql/cacherepository"
@@ -42,7 +43,8 @@ func Inject() (*provider.GameServer, func(), error) {
 	userUsecase := usecase.NewUserUsecase(userRegisterService)
 	userHandler := api.NewUserHandler(userUsecase)
 	baseHandler := handler.NewBaseHandler(userHandler)
-	router := handler.NewRouter(baseHandler)
+	transactionMiddleware := middleware.NewTransactionMiddleware(applicationDB, cacheDB)
+	router := handler.NewRouter(baseHandler, transactionMiddleware)
 	gameServer := provider.NewGameServer(router, applicationDB)
 	return gameServer, func() {
 		cleanup()
