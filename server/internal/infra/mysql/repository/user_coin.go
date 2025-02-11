@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/labstack/gommon/log"
 	"github.com/samber/lo"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/yamato0204/cache-server-golang/internal/infra/mysql"
@@ -27,11 +28,13 @@ func (r *CoinEntityRepository) BulkInsert(ctx context.Context, tx *sqlx.Tx, cont
 	if err != nil {
 		return err
 	}
+	boil.DebugMode = true
 
 	err = dms.InsertAll(ctx, tx, boil.Infer())
 	if err != nil {
 		return err
 	}
+	log.Info("BulkInsert : ", dms)
 
 	return nil
 }
@@ -45,6 +48,8 @@ func (r *CoinEntityRepository) BulkUpdate(ctx context.Context, tx *sqlx.Tx, cont
 	if _, err = tx.ExecContext(ctx, query); err != nil {
 		return err
 	}
+	log.Info("BulkUpdate: ", query)
+
 	return nil
 }
 

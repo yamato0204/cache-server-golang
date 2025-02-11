@@ -12,7 +12,7 @@ func Inject() (*provider.GameServer, func(), error) {
 	wire.Build(
 		provider.NewGameServer,
 		provider.HandlerSet,
-		provider.UsecaseSet,
+		provider.UseCaseSet,
 		provider.ServiceSet,
 		provider.RepositorySet,
 		provider.InfraSet,

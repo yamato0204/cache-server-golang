@@ -3,6 +3,7 @@ package cachedb
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -84,6 +85,7 @@ func (cdb *CacheDB) Update(ctx context.Context, content CacheContent) error {
 		}
 		return nil
 	case Insert:
+		fmt.Println("updateメソッドで、Insertステータスのキャッシュが見つかりました")
 		if err = cacheContent.Update(content); err != nil {
 			return err
 		}
